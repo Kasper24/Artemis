@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -14,15 +15,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
         private readonly ISettingsVmFactory _settingsVmFactory;
+        private readonly ITelemetryService _telemetryService;
         private bool _confirmedDisable;
 
-        public DeviceSettingsTabViewModel(IRgbService rgbService, IDialogService dialogService, ISettingsVmFactory settingsVmFactory)
+        public DeviceSettingsTabViewModel(IRgbService rgbService, IDialogService dialogService, ISettingsVmFactory settingsVmFactory, ITelemetryService telemetryService)
         {
             DisplayName = "DEVICES";
 
             _rgbService = rgbService;
             _dialogService = dialogService;
             _settingsVmFactory = settingsVmFactory;
+            _telemetryService = telemetryService;
         }
 
         public async Task<bool> ShowDeviceDisableDialog()
@@ -53,8 +56,15 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             Items.Add(_settingsVmFactory.CreateDeviceSettingsViewModel(e.Device));
         }
 
-        #region Overrides of AllActive
+        #region Overrides of Screen
 
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            _telemetryService.TrackPageView("Settings.Devices");
+            base.OnInitialActivate();
+        }
+        
         /// <inheritdoc />
         protected override void OnActivate()
         {

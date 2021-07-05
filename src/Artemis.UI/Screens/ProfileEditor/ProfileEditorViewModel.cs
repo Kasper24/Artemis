@@ -25,6 +25,7 @@ namespace Artemis.UI.Screens.ProfileEditor
     public class ProfileEditorViewModel : MainScreenViewModel, IHandle<MainWindowFocusChangedEvent>
     {
         private readonly IDebugService _debugService;
+        private readonly ITelemetryService _telemetryService;
         private readonly IMessageService _messageService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
@@ -49,6 +50,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             ISettingsService settingsService,
             IMessageService messageService,
             IDebugService debugService,
+            ITelemetryService telemetryService,
             IWindowManager windowManager,
             IEventAggregator eventAggregator,
             IScriptVmFactory scriptVmFactory,
@@ -59,6 +61,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             _settingsService = settingsService;
             _messageService = messageService;
             _debugService = debugService;
+            _telemetryService = telemetryService;
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
             _scriptVmFactory = scriptVmFactory;
@@ -190,6 +193,7 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         protected override void OnInitialActivate()
         {
+            _telemetryService.TrackPageView("ProfileEditor");
             StopOnFocusLoss.AutoSave = true;
             ShowDataModelValues.AutoSave = true;
             FocusSelectedLayer.AutoSave = true;

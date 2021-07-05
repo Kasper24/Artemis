@@ -1,16 +1,19 @@
 ﻿using System.Reflection;
 using System.Windows.Navigation;
 using Artemis.Core;
+using Artemis.UI.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.About
 {
     public class AboutTabViewModel : Screen
     {
+        private readonly ITelemetryService _telemetryService;
         private string _version;
 
-        public AboutTabViewModel()
+        public AboutTabViewModel(ITelemetryService telemetryService)
         {
+            _telemetryService = telemetryService;
             DisplayName = "ABOUT";
         }
 
@@ -31,6 +34,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.About
         }
 
         #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            _telemetryService.TrackPageView("Settings.About");
+            base.OnInitialActivate();
+        }
 
         /// <inheritdoc />
         protected override void OnActivate()

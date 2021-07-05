@@ -32,12 +32,14 @@ namespace Artemis.UI.Services
         private readonly IDialogService _dialogService;
         private readonly ILogger _logger;
         private readonly IWindowService _windowService;
+        private readonly ITelemetryService _telemetryService;
 
-        public UpdateService(ILogger logger, ISettingsService settingsService, IDialogService dialogService, IWindowService windowService)
+        public UpdateService(ILogger logger, ISettingsService settingsService, IDialogService dialogService, IWindowService windowService, ITelemetryService telemetryService)
         {
             _logger = logger;
             _dialogService = dialogService;
             _windowService = windowService;
+            _telemetryService = telemetryService;
             _windowService.MainWindowOpened += WindowServiceOnMainWindowOpened;
 
             _checkForUpdates = settingsService.GetSetting("UI.CheckForUpdates", true);
@@ -52,7 +54,10 @@ namespace Artemis.UI.Services
         {
             object result = await _dialogService.ShowDialog<UpdateDialogViewModel>(new Dictionary<string, object> {{"buildInfo", buildInfo}});
             if (result is bool resultBool && resultBool == false)
+            {
+                _telemetryService.TrackEvent("Update", "Decline");
                 SuspendAutoUpdate = true;
+            }
         }
 
         private async Task UpdateInstaller()
@@ -156,6 +161,7 @@ namespace Artemis.UI.Services
         public async Task ApplyUpdate()
         {
             _logger.Information("ApplyUpdate: Applying update");
+            _telemetryService.TrackEvent("Update", "Apply");
 
             // Ensure the installer is up-to-date, get installer build info
             DevOpsBuild buildInfo = await GetBuildInfo(6);

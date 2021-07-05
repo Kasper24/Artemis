@@ -9,6 +9,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Windows;
 using Artemis.Core;
+using Artemis.UI.Services;
 using Artemis.UI.Utilities;
 using Ninject;
 using Ookii.Dialogs.Wpf;
@@ -35,6 +36,7 @@ namespace Artemis.UI
 
         public string[] StartupArguments { get; }
         public bool IsElevated { get; }
+        public ITelemetryService Telemetry { get; set; }
 
         public bool FocusExistingInstance()
         {
@@ -47,6 +49,8 @@ namespace Artemis.UI
 
         public void DisplayException(Exception e)
         {
+            Telemetry?.TrackException(e, "Unhandled");
+
             using TaskDialog dialog = new();
             AssemblyInformationalVersionAttribute versionAttribute = typeof(ApplicationStateManager).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             dialog.WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";

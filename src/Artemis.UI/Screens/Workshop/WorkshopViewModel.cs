@@ -1,4 +1,5 @@
 ﻿using System.Windows.Media;
+using Artemis.UI.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.Workshop
@@ -7,9 +8,11 @@ namespace Artemis.UI.Screens.Workshop
     {
         private Color _testColor;
         private bool _testPopupOpen;
+        private readonly ITelemetryService _telemetryService;
 
-        public WorkshopViewModel()
+        public WorkshopViewModel(ITelemetryService telemetryService)
         {
+            _telemetryService = telemetryService;
             DisplayName = "Workshop";
         }
 
@@ -29,6 +32,12 @@ namespace Artemis.UI.Screens.Workshop
         {
             TestPopupOpen = !TestPopupOpen;
             TestColor = Color.FromRgb(5, 174, 255);
+        }
+
+        protected override void OnInitialActivate()
+        {
+            _telemetryService.TrackPageView("Workshop");
+            base.OnInitialActivate();
         }
     }
 }

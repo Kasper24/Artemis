@@ -14,6 +14,7 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
+using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using SkiaSharp;
@@ -30,6 +31,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
+        private readonly ITelemetryService _telemetryService;
         private readonly ISettingsService _settingsService;
         private Cursor _cursor;
         private PanZoomViewModel _panZoomViewModel;
@@ -42,7 +44,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
             ISettingsService settingsService,
             IDeviceService deviceService,
             IWindowManager windowManager,
-            IDeviceDebugVmFactory deviceDebugVmFactory)
+            IDeviceDebugVmFactory deviceDebugVmFactory,
+            ITelemetryService telemetryService)
         {
             DisplayName = "Surface Editor";
             SelectionRectangle = new RectangleGeometry();
@@ -58,6 +61,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _dialogService = dialogService;
             _settingsService = settingsService;
             _deviceService = deviceService;
+            _telemetryService = telemetryService;
             _windowManager = windowManager;
             _deviceDebugVmFactory = deviceDebugVmFactory;
         }
@@ -154,6 +158,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         protected override void OnInitialActivate()
         {
+            _telemetryService.TrackPageView("SurfaceEditor");
             LoadWorkspaceSettings();
             SurfaceDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => new SurfaceDeviceViewModel(d, _rgbService)));
             ListDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex * -1).Select(d => new ListDeviceViewModel(d, this)));
@@ -277,7 +282,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private Point _mouseDragStartPoint;
         private bool _colorDevices;
         private bool _colorFirstLedOnly;
-
+        
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)
         {

@@ -124,6 +124,31 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Enable telemetry</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                If enabled <Run Text="anonymous" FontWeight="Bold"/> usage data is collected to help improve Artemis. <LineBreak/> 
+                                Only data on OS, UI usage, updates and errors is gathered with no performance impact. You can learn more
+                                <Hyperlink Style="{StaticResource ArtemisHyperlink}" RequestNavigate="{s:Action OpenHyperlink}" NavigateUri="https://wiki.artemis-rgb.com/en/telemetry">
+                                    on the wiki
+                                </Hyperlink>.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding EnableTelemetry}" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Log level</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
                                 Sets the logging level, a higher logging level will result in more log files.

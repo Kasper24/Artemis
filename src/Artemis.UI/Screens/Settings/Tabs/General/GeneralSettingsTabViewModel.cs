@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
@@ -26,6 +27,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         private readonly IKernel _kernel;
         private readonly IMessageService _messageService;
         private readonly IRegistrationService _registrationService;
+        private readonly ITelemetryService _telemetryService;
         private readonly ISettingsService _settingsService;
         private readonly IUpdateService _updateService;
         private readonly IWindowManager _windowManager;
@@ -43,7 +45,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             IPluginManagementService pluginManagementService,
             IMessageService messageService,
             IRegistrationService registrationService,
-            ICoreService coreService
+            ICoreService coreService,
+            ITelemetryService telemetryService
         )
         {
             DisplayName = "GENERAL";
@@ -56,6 +59,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             _updateService = updateService;
             _messageService = messageService;
             _registrationService = registrationService;
+            _telemetryService = telemetryService;
 
             LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
             ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
@@ -147,6 +151,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 _settingsService.GetSetting("UI.ShowOnStartup", true).Value = !value;
                 _settingsService.GetSetting("UI.ShowOnStartup", true).Save();
                 NotifyOfPropertyChange(nameof(StartMinimized));
+            }
+        }
+
+        public bool EnableTelemetry
+        {
+            get => _settingsService.GetSetting("UI.EnableTelemetry", false).Value;
+            set
+            {
+                _settingsService.GetSetting("UI.EnableTelemetry", false).Value = value;
+                _settingsService.GetSetting("UI.EnableTelemetry", false).Save();
+                NotifyOfPropertyChange(nameof(EnableTelemetry));
             }
         }
 
@@ -242,6 +257,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             set => SetAndNotify(ref _canOfferUpdatesIfFound, value);
         }
 
+        public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
+        {
+            Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
+        }
+
         public void ShowDebugger()
         {
             _debugService.ShowDebugger();
@@ -300,6 +320,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
         protected override void OnInitialActivate()
         {
+            _telemetryService.TrackPageView("Settings.General");
             Task.Run(() => ApplyAutorun(false));
             base.OnInitialActivate();
         }

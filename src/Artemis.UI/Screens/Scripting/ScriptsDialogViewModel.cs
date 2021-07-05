@@ -8,6 +8,7 @@ using Artemis.Core.ScriptingProviders;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Scripting.Dialogs;
+using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -20,6 +21,7 @@ namespace Artemis.UI.Screens.Scripting
         private readonly IProfileService _profileService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IScriptVmFactory _scriptVmFactory;
+        private readonly ITelemetryService _telemetryService;
         private readonly Dictionary<ScriptingProvider, IScriptEditorViewModel> _providerViewModels = new();
         private ScriptConfigurationViewModel _selectedScript;
 
@@ -28,13 +30,15 @@ namespace Artemis.UI.Screens.Scripting
             IDialogService dialogService,
             IProfileService profileService,
             IProfileEditorService profileEditorService,
-            IScriptVmFactory scriptVmFactory)
+            IScriptVmFactory scriptVmFactory,
+            ITelemetryService telemetryService)
         {
             _scriptingService = scriptingService;
             _dialogService = dialogService;
             _profileService = profileService;
             _profileEditorService = profileEditorService;
             _scriptVmFactory = scriptVmFactory;
+            _telemetryService = telemetryService;
 
             DisplayName = "Artemis | Profile Scripts";
             ScriptType = ScriptType.Profile;
@@ -149,6 +153,7 @@ namespace Artemis.UI.Screens.Scripting
         /// <inheritdoc />
         protected override void OnInitialActivate()
         {
+            _telemetryService.TrackPageView("ScriptsDialog");
             SelectedScript = ScriptConfigurations.FirstOrDefault();
             base.OnInitialActivate();
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -67,6 +67,7 @@ namespace Artemis.UI
                 _exceptionLogger.Error($"Failed to set DPI-Awareness: {ex.Message}");
             }
 
+            _applicationStateManager.Telemetry = Kernel.Get<ITelemetryService>();
             IViewManager viewManager = Kernel.Get<IViewManager>();
             StartupArguments = Args.ToList();
 
@@ -99,6 +100,8 @@ namespace Artemis.UI
                     _core.StartupArguments = StartupArguments;
                     _core.IsElevated = _applicationStateManager.IsElevated;
                     _core.Initialize();
+
+                    _applicationStateManager.Telemetry.TrackEvent("Core", "Initialized");
                 }
                 catch (Exception e)
                 {

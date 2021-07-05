@@ -6,6 +6,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
 using Ookii.Dialogs.Wpf;
 using Stylet;
@@ -17,16 +18,18 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IMessageService _messageService;
         private readonly ISettingsVmFactory _settingsVmFactory;
+        private readonly ITelemetryService _telemetryService;
         private string _searchPluginInput;
         private List<PluginSettingsViewModel> _instances;
 
-        public PluginSettingsTabViewModel(IPluginManagementService pluginManagementService, IMessageService messageService, ISettingsVmFactory settingsVmFactory)
+        public PluginSettingsTabViewModel(IPluginManagementService pluginManagementService, IMessageService messageService, ISettingsVmFactory settingsVmFactory, ITelemetryService telemetryService)
         {
             DisplayName = "PLUGINS";
 
             _pluginManagementService = pluginManagementService;
             _messageService = messageService;
             _settingsVmFactory = settingsVmFactory;
+            _telemetryService = telemetryService;
         }
 
         public string SearchPluginInput
@@ -67,6 +70,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         protected override void OnInitialActivate()
         {
+            _telemetryService.TrackPageView("Settings.Plugins");
+
             // Take it off the UI thread to avoid freezing on tab change
             Task.Run(async () =>
             {
