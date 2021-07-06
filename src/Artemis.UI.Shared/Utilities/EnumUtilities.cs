@@ -20,7 +20,7 @@ namespace Artemis.UI.Shared
             if (!t.IsEnum)
                 throw new ArgumentException($"{nameof(t)} must be an enum type");
 
-            return Enum.GetValues(t).Cast<Enum>().Select(e => new ValueDescription(e, e.Humanize())).ToList();
+            return Enum.GetValues(t).Cast<Enum>().Select(e => new ValueDescription(e, e.ToString())).ToList();
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Artemis.UI.Shared
         /// <returns>A humanized string describing the given value</returns>
         public static string HumanizeValue(Enum value)
         {
-            return value.Humanize();
+            return value.ToString();
         }
     }
 
